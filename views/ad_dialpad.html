@@ -1,0 +1,181 @@
+<div class="dialerpad-container">
+    <div class="row" style="margin-bottom:3px;">
+        <input type="text" id="numbercall" class="txtnumbercall">
+        <button class="btn btndelete">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                <path fill="#000000"
+                    d="M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12L19,15.59M22,3A2,2 0 0,1 24,5V19A2,2 0 0,1 22,21H7C6.31,21 5.77,20.64 5.41,20.11L0,12L5.41,3.88C5.77,3.35 6.31,3 7,3H22M22,5H7L2.28,12L7,19H22V5Z" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="dialerpad">
+        <div class="row">
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="1">
+                <div class="keynum">1</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="2">
+                <div class="keynum">2</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="3">
+                <div class="keynum">3</div>
+            </button>
+        </div>
+        <div class="row">
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="4">
+                <div class="keynum">4</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="5">
+                <div class="keynum">5</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="6">
+                <div class="keynum">6</div>
+            </button>
+        </div>
+        <div class="row">
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="7">
+                <div class="keynum">7</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="8">
+                <div class="keynum">8</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="9">
+                <div class="keynum">9</div>
+            </button>
+        </div>
+        <div class="row">
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="*">
+                <div class="keynum">*</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="0">
+                <div class="keynum">0</div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnnumber" data-num="#">
+                <div class="keynum">#</div>
+            </button>
+        </div>
+        <div class="row" style="align-content: center;">
+            <button class="btn btn-circle btnnumber-hide" data-num="">
+                <div class="keynum"></div>
+            </button>
+            <button class="btn btn-outline-facebook btn-circle btnCall" data-num="0">
+                <i class="mdi mdi-phone btn-outline-success" id="call-button"></i>
+            </button>
+            <button class="btn btn-circle btnnumber-hide" data-num="">
+                <div class="keynum"></div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dialerpad-container {
+        width: 260px;
+        border-radius: 3%;
+        -webkit-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        -moz-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        box-shadow: 0px 0px 30px -11px rgba(0, 0, 0, 1);
+        background-color: white;
+    }
+    
+    .dialerpad {
+        padding: 30px;
+        width: 100%;
+    }
+    
+    .btnnumber {
+        width: 60px;
+        height: 60px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        float: right;
+        -webkit-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        -moz-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        box-shadow: 0px 0px 7px -3px rgba(0, 0, 0, 1);
+    }
+    
+    .btnCall {
+        width: 60px;
+        height: 60px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        float: right;
+        background-color: green;
+        -webkit-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        -moz-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        box-shadow: 0px 0px 7px -3px rgba(0, 0, 0, 1);
+    }
+    
+    .btnnumber-hide {
+        width: 60px;
+        height: 60px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        float: right;
+    }
+    
+    .txtnumbercall {
+        margin-top: 12px;
+        margin-left: 12px;
+        padding-left: 25px;
+        padding-right: 25px;
+        height: 50px;
+        width: 70.5%;
+        text-align: center;
+        font-size: 25px;
+        font-family: 'Berlin Sans FB';
+        color: rgb(93, 121, 189);
+        border: none;
+        background-color: rgba(238, 238, 238, 0.959);
+    }
+    
+    .btndelete {
+        margin-top: 12px;
+        width: 60px;
+        height: 50px;
+        margin-bottom: 10px;
+        float: right;
+        background-color: rgba(238, 238, 238, 0.959);
+        border-radius: 0px !important;
+    }
+    
+    .keynum {
+        font-size: 25px;
+    }
+    
+    .keytext {
+        font-size: 12px;
+    }
+</style>
+
+<script>
+    $(document).on('keypress', function(e) {
+        if (e.which == 13) {
+            if ($("#dialpadmodal").hasClass("dialpad_hide") == false) {
+                var phonenumber = $("#numbercall").val();
+                CallPhone(phonenumber);
+                $("#numbercall").val("");
+                $("#dialpadmodal").addClass("dialpad_hide");
+                $("#dialpadmodal").hide(300);
+            }
+        }
+    });
+
+    $(".btnCall").on("click", function() {
+        var phonenumber = $("#numbercall").val();
+        CallPhone(phonenumber);
+        $("#numbercall").val("");
+        $("#dialpadmodal").addClass("dialpad_hide");
+        $("#dialpadmodal").hide(300);
+    });
+
+    $(".btnnumber").on("click", function() {
+        $("#numbercall").val($("#numbercall").val() + $(this).attr("data-num"));
+    });
+
+    $(".btndelete").on("click", function() {
+        var str = $("#numbercall").val();
+        var len = String(str).length - 1;
+        $("#numbercall").val(str.substring(0, len));
+    });
+</script>

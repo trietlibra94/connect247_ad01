@@ -1,0 +1,149 @@
+<div style="min-width: 600px;">
+    <div class="row frame_hide" id="infor-control-callnow" style="margin-left: 10px; margin-top: 20px;">
+        <div class="button-control-call" style="margin-left:20px">
+            <a id="btnanswer" class="btn btn-success btn-circle btn-sm" style="margin-right:10px">
+                <img src="../public/img/call_answer.svg" style="width: 22px;">
+                <!-- <img src="../public/img/Answer-button.gif" style="width: 22px;"> -->
+            </a>
+            <a id="btndropcall" class="btn btn-danger btn-circle btn-sm" style="margin-right:10px">
+                <img src="../public/img/call_hangup.svg" style="width: 22px;">
+            </a>
+            <a id="btnholdcall" class="btn btn-primary bg-white btn-circle btn-sm" style="margin-right:10px">
+                <img src="../public/img/call_hold.svg" style="width: 22px;">
+            </a>
+            <a id="btntransfer" class="btn btn-primary bg-white btn-circle btn-sm" style="margin-right:10px" data-toggle="modal" data-target="#TransferCallModal">
+                <img src="../public/img/call_transfer.svg" style="width: 22px;">
+            </a>
+        </div>
+        <div class="infor-call" style="width:400px; margin-top: 5px;">
+            <p id="display_callnumber" style="float: left; margin-right: 20px;">
+                In call... 0932600795
+            </p>
+            <p id="display_result" style="float: left;margin-right: 20px;">
+                Answer
+            </p>
+            <p id="display_time">
+                00:00
+            </p>
+            <input type="hidden" id="callingchannel" value="">
+        </div>
+    </div>
+</div>
+
+<style>
+    .frame_hide {
+        display: none;
+    }
+    
+    .btnanswer_hide {
+        display: none;
+    }
+</style>
+<script>
+    var {
+        exec
+    } = require('child_process');
+
+    $("#btnanswer").on("click", function() {
+        user.phone.ring.pause();
+        user.phone.ring.currentTime = 0;
+        user.phone.call02.answer();
+        user.phone.call02.mute(false);
+        $("#btnanswer").addClass("btnanswer_hide");
+    });
+
+    $("#btnholdcall").on("click", function() {
+        user.phone.call02.mute(!user.phone.call02.mute());
+        if ($("#display_result").text() == "Answer") {
+            $("#display_result").text("Holding");
+        } else
+        if ($("#display_result").text() == "Holding") {
+            $("#display_result").text("Answer");
+        }
+    });
+
+    $("#btndropcall").on("click", function() {
+        //user.phone.call02.hangup();
+        var channel = callinfor.Channel; //$("#callingchannel").val();
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/HangupCall",
+            method: "POST",
+            data: {
+                Channel: channel
+            },
+            success: function(result) {
+
+            },
+            error: function() {
+                toastr.error("Có lỗi xảy ra!");
+            }
+        });
+    });
+
+    $("#btntransfer").on("click", function() {
+        FillListExtention();
+    });
+</script>
+
+<!-- 
+<script>
+    var {
+        exec
+    } = require('child_process');
+
+    $("#btnanswer").on("click", function() {
+        // exec('%LOCALAPPDATA%\\MicroSIP\\microsip.exe /answer', (err, stdout, stderr) => {
+        //     if (err) {
+        //         console.error(`exec error: ${err}`);
+        //         return;
+        //     }
+        //     console.log(`Number of files ${stdout}`);
+        //     $("#btnanswer").addClass("btnanswer_hide");
+        // });
+
+        if (document.getElementById("display_callnumber").innerHTML.includes("Internal call...")) {
+            console.log("Answer internal call...");
+            starttimecall();
+            document.getElementById("display_result").innerHTML = "Answer";
+        }
+
+        phone.ring.pause();
+        phone.ring.currentTime = 0;
+        phone.call02.answer();
+        phone.call02.mute(false);
+        $("#btnanswer").addClass("btnanswer_hide");
+    });
+
+    $("#btnholdcall").on("click", function() {
+        phone.call02.mute(!phone.call02.mute());
+    });
+
+    $("#btndropcall").on("click", function() {
+        if (document.getElementById("display_callnumber").innerHTML.includes("Internal call...")) {
+            phone.call02.hangup();
+            stoptimecall();
+            $("#infor-control-callnow").addClass("frame_hide");
+            document.getElementById("display_result").innerHTML = "";
+            document.getElementById("display_time").innerHTML = "";
+        } else {
+            var channel = $("#callingchannel").val();
+            $.ajax({
+                url: serverUrl + "Api/HangupCall",
+                method: "POST",
+                data: {
+                    Channel: channel
+                },
+                success: function(result) {
+
+                },
+                error: function() {
+                    toastr.error("Có lỗi xảy ra!");
+                }
+            });
+        }
+    });
+
+    $("#btntransfer").on("click", function() {
+        FillListExtention();
+    });
+</script> -->

@@ -1,0 +1,27 @@
+<div class="container04" style="width:100%">
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs screenpop_multi" role="tablist" id="headertab_screenpopmg">
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content" id="contenttab_screenpopmg">
+    </div>
+</div>
+
+<script>
+    function ScreenpopMultiGadget(Phone, HeaderTab) {
+        $("#headertab_screenpopmg").append(
+            '<li class="nav-item">' +
+            '<a class="nav-link navlink_header screenpopphonehearder" id="tab_mg' + Phone + '" data-toggle="tab" href="#mg_' + Phone + '">' + HeaderTab + ': ' + Phone + '&nbsp&nbsp<span class="close">×</span></a>' +
+            '</li>'
+        );
+
+        $("#contenttab_screenpopmg").append(
+            '<div id="mg_' + Phone + '" class="container03 tab-pane">' +
+            '<iframe style="width:100%; height:' + (screen.height + 30) + 'px" frameborder="0" src="' + inforsetting.serverUrl + 'Gadget/GadgetMultiWindow?strPhoneNumber=' + Phone + '"></iframe>' +
+            '</div>'
+        );
+
+        $("#tab_mg" + Phone).click();
+    };
+</script>

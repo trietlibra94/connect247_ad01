@@ -1,0 +1,142 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark fixed-top toggled" id="accordionSidebar" style="margin-top: 64px;">
+    <!-- <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div> -->
+</ul>
+
+<script>
+    $(document).on('click', '.item-screen', function(e) {
+        var screenid = $(this).attr("data-id");
+
+        $(".screen_show").addClass("screen_hide");
+        $(".screen_show").removeClass("screen_show");
+
+        $("#" + screenid).removeClass("screen_hide");
+        $("#" + screenid).addClass("screen_show");
+
+        $(".select_screen").removeClass("select_screen");
+        $(this).addClass("select_screen");
+    });
+
+    $(document).ready(function() {
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/GetListScreenAgentDesktop",
+            method: "POST",
+            success: function(result) {
+                AddTabScreen(result);
+            },
+            error: function() {
+                toastr.error("Có lỗi xảy ra!");
+            }
+        });
+    });
+
+    function AddTabScreen(result) {
+        var objectValue = JSON.parse(result);
+        var len = Object.getOwnPropertyNames(objectValue).length - 1;
+        var firstTab = '';
+        for (i = 0; i < len; i++) {
+            var item = objectValue[i];
+
+            if (item.IsSelectDefault)
+                firstTab = item.ScreenUID;
+
+            var icon = "";
+            if (item.ClassICON.includes("img")) {
+                icon = '<img src="' + item.ClassICON + '" style="width: 20px;">';
+            } else {
+                icon = '<i class="' + item.ClassICON + '"></i>';
+            }
+
+            $("#accordionSidebar").append(
+                '<li class="nav-item">' +
+                '<a class="nav-link item-screen" id="icon-' + item.ScreenUID + '" data-id="' + item.ScreenUID + '">' +
+                icon +
+                '<span>' + item.ScreenHeader + '</span>' +
+                '</a>' +
+                '</li>'
+            );
+
+            $("#content").append(
+                '<div class="container-fluid screen_hide" id="' + item.ScreenUID + '"></div>'
+            );
+
+            if (item.IsUseView) {
+                if (item.ViewName == 'ad_tabscreenpop01.html') {
+                    $("#screenpopurl_01").val(item.ScreenPopURL);
+                    $("#screenpophomeurl_01").val(item.ScreenPopHomeURL);
+                } else
+                if (item.ViewName == 'ad_tabscreenpop02.html') {
+                    $("#screenpopurl_02").val(item.ScreenPopURL);
+                    $("#screenpophomeurl_02").val(item.ScreenPopHomeURL);
+                } else
+                if (item.ViewName == 'ad_tabscreenpop03.html') {
+                    $("#screenpopurl_03").val(item.ScreenPopURL);
+                    $("#screenpophomeurl_03").val(item.ScreenPopHomeURL);
+                }
+
+                $("#" + item.ScreenUID).load("../views/" + item.ViewName);
+            } else
+            if (item.IsUseServerURL) {
+                $("#" + item.ScreenUID).append(
+                    '<iframe <iframe style="width:100%; height:' + (screen.height + 80) + 'px;border:none" src="' + inforsetting.serverUrl + '/' + item.ScreenURL + '"></iframe>'
+                );
+            } else {
+                // $("#" + item.ScreenUID).append(
+                //     '<iframe <iframe style="width:100%; height:' + (screen.height + 80) + 'px;border:none" src="' + item.ScreenURL + '"></iframe>'
+                // );
+
+                if (item.Is_AuthenticByUserConnect247) {
+                    var AuthenticURL = item.AuthenticURL.replace('@USERNAME', user.username).replace('@PASSWORD', user.password);
+                    $.ajax({
+                        type: "POST",
+                        url: AuthenticURL,
+                        async: false,
+                        success: function(result) {
+                            // RefreshFormsAuthentication de khong bi loi trung FormsAuthentication voi cac ung dung khac 
+                            // Gay mat ket noi Signair.
+                            $.ajax({
+                                url: inforsetting.serverUrl + "Api/RefreshFormsAuthentication",
+                                data: {
+                                    Username: user.username,
+                                    Password: user.password,
+                                    Extention: user.extention
+                                },
+                                method: "POST",
+                                success: function(result) {}
+                            });
+                        }
+                    });
+                    $("#" + item.ScreenUID).append(
+                        '<iframe <iframe style="width:100%; height:' + (screen.height + 80) + 'px;border:none" src="' + item.ScreenURL + '"></iframe>'
+                    );
+                } else {
+                    $("#" + item.ScreenUID).append(
+                        '<iframe <iframe style="width:100%; height:' + (screen.height + 80) + 'px;border:none" src="' + item.ScreenURL + '"></iframe>'
+                    );
+                }
+            }
+        }
+
+        if (firstTab != '') {
+            $("#" + firstTab).removeClass("screen_hide");
+            $("#" + firstTab).addClass("screen_show");
+            $("#icon-" + firstTab).addClass("select_screen");
+        }
+    }
+
+    $(document).on('click', '.close', function(e) {
+        var tabContentId = $(this).parent().attr("href");
+        $(this).parent().parent().remove(); //remove li of tab
+        $('#myTab a:last').tab('show'); // Select first tab
+        $(tabContentId).remove(); //remove respective tab content
+    });
+</script>
+
+<style>
+    .select_screen {
+        color: #489175 !important;
+        background-color: rgba(0, 255, 255, 0.212);
+        border-left: aqua 3px solid;
+    }
+</style>

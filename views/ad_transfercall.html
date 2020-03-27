@@ -1,0 +1,59 @@
+<input type="hidden" id="channelcall">
+<div class="form-transfercall" style="width:100%; height: 200px; background-color: rgb(211, 235, 241); padding: 20px;">
+    <div>Transfer Call</div>
+    <div class="autocomplete" style="width:100%;">
+        <input list="extention-list" id="extention-list-select" class="form-control" type="text" />
+        <datalist id="extention-list">
+        </datalist>
+    </div>
+    <br><br>
+    <div class="row">
+        <div class="col-md-7"></div>
+        <button class="btn btn-danger col-md-2" style="margin-right:20px;" id="closetransfer" data-dismiss="modal" aria-label="Close" aria-hidden="true">Close</button>
+        <button class="btn btn-success col-md-2" id="accepttransfer">Accept</button>
+    </div>
+</div>
+
+<script>
+    function FillListExtention() {
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/GetListExtention",
+            method: "POST",
+            success: function(result) {
+                $("#extention-list").empty();
+
+                var objectValue = JSON.parse(result);
+                var len = Object.getOwnPropertyNames(objectValue).length - 1;
+
+                for (i = 0; i < len; i++) {
+                    $("#extention-list").append(
+                        '<option value = "' + objectValue[i].ExtentionID + '" >' + objectValue[i].Username + ' - ' + objectValue[i].stateName
+                    );
+                }
+            }
+        });
+    }
+
+    $("#accepttransfer").on("click", function() {
+        if (callinfor.Channel == "") {
+            alert("Not exists call now !");
+        } else {
+            $.ajax({
+                url: inforsetting.serverUrl + "Api/TranferCall",
+                method: "POST",
+                data: {
+                    Chanel: callinfor.Channel,
+                    ExtentionSource: user.extention,
+                    ExtentionDest: $("#extention-list-select").val()
+                },
+                success: function(result) {
+                    if (result.success) {
+                        $("#closetransfer").click();
+                    } else {
+                        alert(result.message);
+                    }
+                }
+            });
+        }
+    });
+</script>

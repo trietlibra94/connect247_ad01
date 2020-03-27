@@ -1,0 +1,43 @@
+<div class="container04" style="width:100%">
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs screenpop_one screenpop_one01" role="tablist" id="headertab_screenpop01">
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content" id="contenttab_screenpop01">
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#screenpophomeurl_01").val() != '') {
+            $("#headertab_screenpop01").append(
+                '<li class="nav-item">' +
+                '<a class="nav-link navlink_header active" data-toggle="tab" href="#screenpophome01">Home 01</a>' +
+                '</li>'
+            );
+
+            $("#contenttab_screenpop01").append(
+                '<div id="screenpophome01" class="container03 tab-pane active">' +
+                '<iframe style="width:100%; height:' + (screen.height + 20) + 'px" frameborder="0" src="' + $("#screenpophomeurl_01").val() + '"></iframe>' +
+                '</div>'
+            );
+        }
+    });
+
+    function Screenpop01(Phone, HeaderTab) {
+        $("#headertab_screenpop01").append(
+            '<li class="nav-item">' +
+            '<a class="nav-link navlink_header screenpopphonehearder" id="tab01' + Phone + '" data-toggle="tab" href="#content01_' + Phone + '">' + HeaderTab + ': ' + Phone + ' &nbsp&nbsp<span class="close">×</span></a>' +
+            '</li>'
+        );
+
+        $("#contenttab_screenpop01").append(
+            '<div id="content01_' + Phone + '" class="container03 tab-pane">' +
+            '<iframe style="width:100%; height:' + (screen.height + 20) + 'px" frameborder="0" src="' + $("#screenpopurl_01").val() + Phone + '"></iframe>' +
+            '</div>'
+        );
+
+        $("#tab01" + Phone).click();
+    };
+</script>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Connect247</title>
+    <!-- Custom fonts for this template-->
+    <link href="../public/lib/PurpleAdmin/vendors/iconfonts/mdi/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="../public/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="../public/css/sb-admin-2.min.css" rel="stylesheet">
+    <script>
+        window.$ = window.jQuery = require('jquery');
+    </script>
+</head>
+
+<body id="page-top">
+    <div id="menu_header"></div>
+    <div id="wrapper">
+        <div id="menu_screen"></div>
+        <div id="content-wrapper" class="d-flex flex-column"></div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" id="logout" href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dialpad Modal-->
+    <div class="dialpadmodal dialpad_hide" id="dialpadmodal" aria-hidden="true">
+    </div>
+
+    <!-- Dialpad Button-->
+    <div class="dialpadbutton" id="dialpadbutton" aria-hidden="true">
+        <button class="btn btn-outline-facebook btn-circle btndialpad" style="background-color: rgb(106, 236, 236);">
+            <i class="mdi mdi-dialpad btn-outline-success" id="dialpad-button"></i>
+        </button>
+    </div>
+
+    <!-- Transfer Call Modal-->
+    <div class="modal fade" id="TransferCallModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="TransferCallModal_Content">
+            </div>
+        </div>
+    </div>
+
+    <!-- Setting Modal-->
+    <div class="modal fade" id="SettingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="SettingModal_Content">
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <!-- <script src="../public/vendor/jquery/jquery.min.js"></script> -->
+    <!-- <script src="../public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
+    <!-- Core plugin JavaScript-->
+    <!-- <script src="../public/vendor/jquery-easing/jquery.easing.min.js"></script> -->
+    <!-- Custom scripts for all pages-->
+    <script src="../public/js/sb-admin-2.min.js"></script>
+    <!-- <script src="../public/js/sip-0.15.10.js"></script> -->
+    <!-- Page level plugins -->
+    <script src="../public/js/basewebphone.js"></script>
+    <script src="../public/js/basesystem.js"></script>
+    <script src="../public/lib/toastr/toastr.min.js"></script>
+    <script src="../public/lib/PurpleAdmin/vendors/js/vendor.bundle.base.js"></script>
+    <script src="../public/lib/PurpleAdmin/vendors/js/vendor.bundle.addons.js"></script>
+    <script src="../public/lib/PurpleAdmin/js/off-canvas.js"></script>
+    <script src="../public/lib/PurpleAdmin/js/misc.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="../public/js/jquery.signalR-2.3.0.min.js"></script>
+</body>
+
+</html>
+
+<style>
+    .dialpadmodal {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        left: 82%;
+        top: 33%;
+    }
+    
+    .dialpadbutton {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        left: 93%;
+        top: 90%;
+    }
+    
+    .btndialpad {
+        width: 60px;
+        height: 60px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        float: right;
+        -webkit-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        -moz-box-shadow: -6px 6px 25px -10px rgba(0, 0, 0, 1);
+        box-shadow: 0px 0px 7px -3px rgba(0, 0, 0, 1);
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        const fs = require('fs')
+
+        fs.readFile(__dirname.replace("views", "") + '/public/configfile/serverUrl.txt', 'utf-8', (err, data) => {
+            if (err) throw err;
+
+            inforsetting.setServerUrl(data);
+
+            // get user infor de thuc hien cac login api tu cac ung dung khac cung database - dang loi neu su dung
+            $.ajax({
+                url: inforsetting.serverUrl + "Api/GetUserInfor",
+                async: false,
+                method: "POST",
+                success: function(result) {
+                    var userinfor = JSON.parse(result);
+                    user.setInfo(userinfor.Username, userinfor.Password, userinfor.Extention);
+                },
+                error: function() {}
+            });
+
+            $.getScript(inforsetting.serverUrl + '/signalr/hubs', function() {
+                $.connection.baseHub.client.addNotificationToPage = function(msgType, msgTitle, msgContent, msgLink, alwayShow) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": false,
+                        "onclick": msgLink == null ? null : function() {
+                            window.open(msgLink, "_self")
+                        },
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": alwayShow === false ? 10000 : 0,
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    toastr[msgType](msgContent, msgTitle);
+                    console.log("tosss...");
+                };
+
+                $.connection.baseHub.client.addAlert = function() {
+                    var audio = new Audio('../Contents/audio/alert.mp3');
+                    audio.play();
+                };
+
+                $.connection.baseHub.client.ResponseDialing = function(Exten, Response, DateReceived, ActionId, Channel) {
+                    if (Response == "Failure") {
+                        $("#infor-control-callnow").addClass("frame_hide");
+                        callinfor.clearCall();
+                    } else
+                    if (Response == "Success") {
+                        starttimecall();
+                        document.getElementById("display_result").innerHTML = "Answer";
+                        callinfor.contructorCall(Channel, "");
+                    }
+                };
+
+                $.connection.baseHub.client.ResponseHangUp = function(Exten, ChannelState, DateReceived, Channel) {
+                    // reset display
+                    stoptimecall();
+
+                    $("#infor-control-callnow").addClass("frame_hide");
+                    document.getElementById("display_result").innerHTML = "";
+                    document.getElementById("display_time").innerHTML = "";
+                    callinfor.clearCall();
+                };
+
+                $.connection.baseHub.client.ResponseHangUpCallInNotAnswer = function(Exten, ChannelState, DateReceived, Channel) {
+                    // reset display
+                    stoptimecall();
+                    $("#infor-control-callnow").addClass("frame_hide");
+                    document.getElementById("display_result").innerHTML = "";
+                    document.getElementById("display_time").innerHTML = "";
+                    callinfor.clearCall();
+                };
+
+                $.connection.baseHub.client.NewRinging = function(Exten, Phone, ChannelState, DateReceived, Channel) {
+                    document.getElementById("display_result").innerHTML = "";
+                    document.getElementById("display_time").innerHTML = "";
+                    document.getElementById("display_callnumber").innerHTML = "Incoming call... " + Phone;
+
+                    callinfor.contructorCall(Channel, Phone);
+
+                    $("#infor-control-callnow").removeClass("frame_hide");
+                    $("#btnanswer").removeClass("btnanswer_hide");
+
+                    if ($('ul').hasClass('screenpop_one')) {
+                        CheckScreenPop(Phone, "Incoming phone");
+                    }
+                    if ($('ul').hasClass('screenpop_multi')) {
+                        ScreenpopMultiGadget(Phone, "Incoming phone");
+                    }
+                };
+
+                $.connection.baseHub.client.NewDialing = function(phonenumber) {
+
+                    stoptimecall();
+
+                    document.getElementById("display_result").innerHTML = "";
+                    document.getElementById("display_time").innerHTML = "";
+                    document.getElementById("display_callnumber").innerHTML = "Dialing... " + phonenumber;
+                    $("#infor-control-callnow").removeClass("frame_hide");
+                    $("#btnanswer").addClass("btnanswer_hide");
+
+                    if ($('ul').hasClass('screenpop_one')) {
+                        CheckScreenPop(phonenumber, "Dial phone");
+                    }
+                    if ($('ul').hasClass('screenpop_multi')) {
+                        ScreenpopMultiGadget(phonenumber, "Dial phone");
+                    }
+
+                    document.getElementById("displaystate").innerHTML = "Dialing";
+                    document.getElementById("img_state_icon").src = "../public/img/YELLOW.jpg";
+                };
+
+                $.connection.baseHub.client.NewTransferCall = function(Exten, Phone, Channel, DateReceived) {
+
+                    document.getElementById("display_result").innerHTML = "";
+                    document.getElementById("display_time").innerHTML = "";
+                    document.getElementById("display_callnumber").innerHTML = "Transfer call... " + Phone;
+                    $("#infor-control-callnow").removeClass("frame_hide");
+                    $("#btnanswer").removeClass("btnanswer_hide");
+                    callinfor.contructorCall(Channel, Phone);
+
+                    if ($('ul').hasClass('screenpop_one')) {
+                        CheckScreenPop(Phone, "Transfer phone");
+                    }
+                    if ($('ul').hasClass('screenpop_multi')) {
+                        ScreenpopMultiGadget(Phone, "Transfer phone");
+                    }
+                };
+
+                $.connection.baseHub.client.AgentConnect = function(Exten, Phone, ChannelState, DateReceived, Channel) {
+                    starttimecall();
+                    document.getElementById("display_result").innerHTML = "Answer";
+                    callinfor.contructorCall(Channel, Phone);
+                };
+
+                $.connection.baseHub.client.AgentChannelDialing = function(Exten, Channel) {
+                    callinfor.contructorCall(Channel, "");
+                };
+
+                $.connection.baseHub.client.AgentSetStateInCall = function(Exten, stateCode, stateName, ImgColor) {
+                    document.getElementById("displaystate").innerHTML = stateName;
+                    document.getElementById("img_state_icon").src = "../public/img/" + ImgColor + ".jpg";
+                };
+
+                $.connection.hub.url = inforsetting.serverUrl + "signalr/hubs";
+
+                $.connection.hub.start().done(function() {
+                    console.log("baseHub connected!");
+                });
+            });
+
+            $.ajax({
+                url: inforsetting.serverUrl + "Api/GetServerSipURL",
+                async: false,
+                method: "POST",
+                success: function(result) {
+                    if (result.success) {
+                        inforsetting.setServerSIP(result.ServerSipURL);
+
+                        fs.readFile(__dirname.replace("views", "") + '/public/configfile/ringtone.txt', 'utf-8', (err, data) => {
+                            if (err) throw err;
+
+                            var phone = new basePhone({
+                                display: {
+                                    element: 'phone', // HTML element id where the phone will be rendered
+                                    dialpad: true, // Display dialpad?
+                                    ring: '../public/sounds/' + data // Audio file URL to be used as a ring tone on incoming call
+                                },
+                                connection: {
+                                    wss: 'wss://' + inforsetting.serverSIP + result.ServerSipPORT, // Your PBX wss interface URL 172.23.90.181
+                                    identity: user.extention + '@' + inforsetting.serverSIP, // User id
+                                    password: result.ServerSipPASSWORD, // User password
+                                    register: true // Register on PBX (required for incoming calls) 
+                                }
+                            });
+
+                            user.contructorPhone(phone);
+                        })
+                    } else {
+                        alert(serversipdata.message);
+                    }
+
+                },
+                error: function() {
+                    alert("GetServerSipURL ERR");
+                }
+            });
+
+            $("#menu_header").load("../views/ad_menuheader.html");
+            $("#menu_screen").load("../views/ad_menuscreen.html");
+            $("#content-wrapper").load("../views/ad_contentscreen.html");
+            $("#dialpadmodal").load("../views/ad_dialpad.html");
+            $("#TransferCallModal_Content").load("../views/ad_transfercall.html");
+            $("#SettingModal_Content").load("../views/ad_setting.html");
+            $("#dialpadmodal").hide();
+        })
+    });
+
+    var count = 1;
+    var timer;
+
+    function starttimecall() {
+        timer = setInterval(starttimer, 1000);
+    }
+
+    function starttimer() {
+        count += 1;
+
+        var mm = Math.floor(count / 60);
+        var ss = count % 60;
+
+        document.getElementById("display_time").innerHTML = mm + ":" + ss;
+    }
+
+    function stoptimecall() {
+        count = 1;
+        clearInterval(timer);
+    }
+
+    function CallPhone(phonenumber) {
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/CallPhone",
+            method: "POST",
+            data: {
+                PhoneNumber: phonenumber
+            },
+            success: function(result) {},
+            error: function() {
+                toastr.error("Có lỗi xảy ra!");
+            }
+        });
+    }
+
+    function CheckScreenPop(Phone, HeaderTab) {
+        if ($('ul').hasClass('screenpop_one01')) {
+            Screenpop01(Phone, HeaderTab);
+        }
+        if ($('ul').hasClass('screenpop_one02')) {
+            Screenpop02(Phone, HeaderTab);
+        }
+        if ($('ul').hasClass('screenpop_one03')) {
+            Screenpop03(Phone, HeaderTab);
+        }
+    }
+
+    var tableToExcel = (function() {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>',
+            base64 = function(s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function(s, c) {
+                return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+                })
+            }
+        return function(table, name) {
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = {
+                worksheet: name || 'Worksheet',
+                table: table.innerHTML
+            }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+
+    var CloseModal = (function() {
+        $("#modal").modal("hide");
+    })
+
+    var CloseModal02 = (function() {
+        $("#modal02").modal("hide");
+    })
+
+    $(document).on('click', '.select_state', function(e) {
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/SetState",
+            method: "POST",
+            data: {
+                StateCode: $(this).attr("data-id")
+            },
+            success: function(result) {
+                document.getElementById("displaystate").innerHTML = result.statename;
+                document.getElementById("img_state_icon").src = "../public/img/" + result.color + ".jpg";
+            },
+            error: function() {
+                toastr.error("Có lỗi xảy ra !");
+            }
+        });
+    });
+
+    $("#logout").on("click", function() {
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/Logout",
+            method: "POST",
+            success: function(result) {
+                if (result.success) {
+                    window.location.href = 'ad_login.html';
+                } else {
+                    alert(result.error);
+                }
+            }
+        });
+    });
+
+    $("#dialpadbutton").on("click", function() {
+        if ($("#dialpadmodal").hasClass("dialpad_hide")) {
+            $("#dialpadmodal").removeClass("dialpad_hide");
+            $("#dialpadmodal").show(300);
+            $("#numbercall").focus();
+        } else {
+            $("#dialpadmodal").addClass("dialpad_hide");
+            $("#dialpadmodal").hide(300);
+        }
+    });
+
+    setInterval(intervalRefreshSession, 300000);
+
+    function intervalRefreshSession() {
+        console.log('refresh session');
+        $.ajax({
+            url: inforsetting.serverUrl + "Api/RefreshSession",
+            method: "POST",
+            success: function(result) {}
+        });
+    }
+</script>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Connect247</title>
+    <link href="../public/lib/PurpleAdmin/vendors/iconfonts/mdi/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="../public/lib/PurpleAdmin/vendors/css/vendor.bundle.base.css" rel="stylesheet" />
+    <link href="../public/lib/PurpleAdmin/css/style.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="../public/lib/PurpleAdmin/images/favicon.png" />
+</head>
+
+<body>
+    <div class="container-scroller" id="bg-login">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="content-wrapper d-flex align-items-center auth">
+                <div class="row w-100">
+                    <div class="col-lg-2 mx-auto">
+                        <div class="auth-form-light text-left p-5 auth-form">
+                            <div class="brand-logo">
+                                <img src="../public/img/slogan.jpg" style="width: 200px;">
+                            </div>
+                            <h4></h4>
+                            <p style="font-family:sans-serif; color:red; margin-bottom:15px" id="error"></p>
+                            <form id="frmLogin" name="frmLogin">
+                                <div class="form-group">
+                                    <input class="form-control input01" type="text" name="UserName" id="UserName" placeholder="Username" />
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control input01" type="password" name="Password" id="Password" placeholder="Password" />
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control input01" type="text" name="Extention" id="Extention" placeholder="Extention" />
+                                </div>
+                                <input type="hidden" name="returnUrl" value="@Request.QueryString[" ReturnUrl "]" />
+                                <div class="form-group">
+                                    <button class="btn btn-success" type="button" id="btnLogin" style="width:100%;">LOGIN</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setting Button-->
+    <div class="settingbutton" id="settingbutton" aria-hidden="true" data-toggle="modal" data-target="#SettingModal">
+        <button class="btn btn-circle btnsetting" style="background-color: transparent">
+            <i class="mdi mdi-settings-box btn-outline-success" id="setting-button"></i>
+        </button>
+    </div>
+
+    <!-- Setting Modal-->
+    <div class="modal fade" id="SettingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="SettingModal_Content">
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingDiv" style="position:fixed; top:45%; left:45%">
+        <img src="../public/img/Connect247_loading.gif" style="width:150px; height:100px" />
+    </div>
+    <script>
+        window.$ = window.jQuery = require('jquery');
+    </script>
+    <script src="../public/lib/PurpleAdmin/vendors/js/vendor.bundle.base.js"></script>
+    <script src="../public/lib/PurpleAdmin/vendors/js/vendor.bundle.addons.js"></script>
+</body>
+
+</html>
+<style>
+    #bg-login {
+        background-image: url('../public/img/bg-login.png');
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 100%;
+        width: 100%;
+    }
+    
+    .content-wrapper {
+        background-color: transparent !important;
+    }
+    
+    .auth-form {
+        width: 300px;
+        height: 390px;
+    }
+    
+    .input01 {
+        /* margin: 40px 25px; */
+        width: 200px;
+        display: block;
+        border: none;
+        padding: 10px 0;
+        border-bottom: solid 1px #7c9fcd;
+        transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #1abc9c 4%);
+        background-position: -200px 0;
+        background-size: 200px 100%;
+        background-repeat: no-repeat;
+        color: #0e6252;
+    }
+    
+    #btnLogin {
+        border-radius: 50px;
+        background-color: #0a448f !important;
+        border: none;
+    }
+    
+    .settingbutton {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        left: 94%;
+        top: 0.3%;
+    }
+</style>
+<script>
+    //$("#SettingModal_Content").load("../views/ad_setting.html");
+
+    var $loading = $('#loadingDiv').hide();
+
+    $(document).ajaxStart(function() {
+        $loading.show();
+    });
+
+    $(document).ajaxStop(function() {
+        $loading.hide();
+    });
+
+    const fs = require('fs')
+
+    fs.readFile(__dirname.replace("views", "") + '/public/configfile/serverurl.txt', 'utf-8', (err, data) => {
+        if (err) throw err;
+
+        $("#btnLogin").on("click", function() {
+            $.ajax({
+                url: data + "Api/AcceptLogin",
+                data: {
+                    Username: $("#UserName").val(),
+                    Password: $("#Password").val(),
+                    Extention: $("#Extention").val()
+                },
+                method: "POST",
+                success: function(result) {
+                    if (result.success) {
+                        AgentName = "trietnm";
+                        window.location.href = 'ad_layout.html';
+                    } else {
+                        alert(result.error);
+                    }
+                },
+                error: function() {
+                    alert("Login ERROR. Disconnect to server");
+                }
+            });
+        });
+
+        $(document).on('keypress', function(e) {
+            if (e.which == 13) {
+                $.ajax({
+                    url: data + "Api/AcceptLogin",
+                    data: {
+                        Username: $("#UserName").val(),
+                        Password: $("#Password").val(),
+                        Extention: $("#Extention").val()
+                    },
+                    method: "POST",
+                    success: function(result) {
+                        if (result.success) {
+                            AgentName = "trietnm";
+                            window.location.href = 'ad_layout.html';
+                        } else {
+                            alert(result.error);
+                        }
+                    },
+                    error: function() {
+                        alert("Login ERROR. Disconnect to server");
+                    }
+                });
+            }
+        });
+    })
+
+    fs.readFile(__dirname.replace("views", "") + '/public/configfile/usernamedefault.txt', 'utf-8', (err, data) => {
+        if (err) throw err;
+        $("#UserName").val(data);
+    })
+    fs.readFile(__dirname.replace("views", "") + '/public/configfile/extentiondefault.txt', 'utf-8', (err, data) => {
+        if (err) throw err;
+        $("#Extention").val(data);
+    })
+
+    $("#settingbutton").on("click", function() {
+        $("#SettingModal_Content").load("../views/ad_setting.html");
+        $("#screenreload").val("ad_login.html");
+    });
+</script>

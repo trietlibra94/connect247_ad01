@@ -1,0 +1,126 @@
+<input type="hidden" id="screenreload">
+<div class="form-setting" style="width:100%; height: 450px; background-color: #ffffff; padding: 20px;">
+    <h2>Setting</h2>
+    <br>
+    <div class="row">
+        <div class="col-md-3">Server URL</div>
+        <div class="col-md-9">
+            <input type="text" class="form-control input01" id="setting-serverurl" style="width: 100%;">
+        </div>
+    </div>
+    <br>
+    <!-- <div class="row">
+        <div class="col-md-3">Server SIP</div>
+        <div class="col-md-9">
+            <input type="text" class="form-control input01" id="setting-serversip" style="width: 100%;">
+        </div>
+    </div> -->
+    <br>
+    <div class="row">
+        <div class="col-md-3">Username default</div>
+        <div class="col-md-9">
+            <input type="text" class="form-control input01" id="setting-usernamedefault" style="width: 100%;">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-3">Extention default</div>
+        <div class="col-md-9">
+            <input type="text" class="form-control input01" id="setting-extentiondefault" style="width: 100%;">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-3">Ring tone</div>
+        <div class="col-md-6">
+            <div class="autocomplete" style="width:100%;">
+                <input list="ringtone-list" id="setting-ringtone" class="form-control input01" type="text" style="width:100%;" />
+                <datalist id="ringtone-list">
+                </datalist>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary" id="btntestring" style="padding: 10px;">Play</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-7"></div>
+        <button class="btn btn-danger col-md-2" style="margin-right:20px; padding-left: 20px;" id="closesetting" data-dismiss="modal" aria-label="Close" aria-hidden="true">Close</button>
+        <button class="btn btn-success col-md-2" style="padding-left: 20px;" id="acceptsetting">Accept</button>
+    </div>
+</div>
+
+<audio id="testring">
+    <source id="testring_src" src="" type="audio/mpeg">
+</audio>
+
+<script>
+    $(document).ready(function() {
+
+        const fs = require('fs')
+
+        fs.readdir(__dirname.replace("views", "") + '/public/sounds/', (err, files) => {
+            files.forEach(file => {
+                $("#ringtone-list").append(
+                    '<option value = "' + file + '" >' + file
+                );
+            });
+        });
+
+        fs.readFile(__dirname.replace("views", "") + '/public/configfile/serverurl.txt', 'utf-8', (err, data) => {
+            if (err) throw err;
+            $("#setting-serverurl").val(data);
+        })
+
+        // fs.readFile(__dirname.replace("views", "") + '/public/configfile/serversip.txt', 'utf-8', (err, data) => {
+        //     if (err) throw err;
+        //     $("#setting-serversip").val(data);
+        // })
+
+        fs.readFile(__dirname.replace("views", "") + '/public/configfile/usernamedefault.txt', 'utf-8', (err, data) => {
+            if (err) throw err;
+            $("#setting-usernamedefault").val(data);
+        })
+
+        fs.readFile(__dirname.replace("views", "") + '/public/configfile/extentiondefault.txt', 'utf-8', (err, data) => {
+            if (err) throw err;
+            $("#setting-extentiondefault").val(data);
+        })
+
+        fs.readFile(__dirname.replace("views", "") + '/public/configfile/ringtone.txt', 'utf-8', (err, data) => {
+            if (err) throw err;
+            $("#setting-ringtone").val(data);
+        })
+
+        $("#acceptsetting").on("click", function() {
+            fs.writeFile(__dirname.replace("views", "") + '/public/configfile/serverurl.txt', $("#setting-serverurl").val(), (err) => {
+                if (err) throw err;
+            })
+
+            // fs.writeFile(__dirname.replace("views", "") + '/public/configfile/serversip.txt', $("#setting-serversip").val(), (err) => {
+            //     if (err) throw err;
+            // })
+
+            fs.writeFile(__dirname.replace("views", "") + '/public/configfile/usernamedefault.txt', $("#setting-usernamedefault").val(), (err) => {
+                if (err) throw err;
+            })
+
+            fs.writeFile(__dirname.replace("views", "") + '/public/configfile/extentiondefault.txt', $("#setting-extentiondefault").val(), (err) => {
+                if (err) throw err;
+            })
+
+            fs.writeFile(__dirname.replace("views", "") + '/public/configfile/ringtone.txt', $("#setting-ringtone").val(), (err) => {
+                if (err) throw err;
+            })
+
+            $("#closesetting").click();
+            window.location.href = $("#screenreload").val();
+        });
+
+        $("#btntestring").on("click", function() {
+            var audio = new Audio(__dirname.replace("views", "") + '/public/sounds/' + $("#setting-ringtone").val());
+            audio.play();
+        });
+    });
+</script>
