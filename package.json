@@ -16,7 +16,7 @@
         "ejs": "^2.7.1",
         "electron-context-menu": "^0.15.1",
         "express": "^4.17.1",
-        "jquery": "^3.4.1",
+        "jquery": "^3.5.0",
         "remote-modules": "^0.37.1",
         "sip.js": "^0.15.10"
     },
