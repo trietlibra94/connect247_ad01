@@ -21,7 +21,7 @@
         "sip.js": "^0.15.10"
     },
     "devDependencies": {
-        "electron": "^6.0.12",
+        "electron": "^11.5.0",
         "electron-wix-msi": "^2.2.0"
     }
 }
